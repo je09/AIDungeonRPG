@@ -236,8 +236,8 @@ function actionResultHandler(roll, index, singleAction, keyword) {
     debugLog("Current skill is " + currentSkill);
 
     action = "\n>You " + actionDescription[randomNumber(actionDescription.length)] + " " + singleAction
-    message = "Roll: " + roll + " – " + actionDescriptions[index] + " +" + expirienceDistribution[index] +
-              " XP for" + currentStat + "and "  + currentSkill
+    message = "Roll: " + roll.toString() + " – " + " +" + expirienceDistribution[index] +
+              " XP for " + currentStat + " and "  + currentSkill
     
     if (state.stats[currentStat] < maxLevel) {
         state.stats[currentStat] += expirienceDistribution[index] / 16
@@ -257,7 +257,7 @@ function simpleActionHandler(singleAction, keyword) {
     currentSkill = avaliableActions[keyword][1].toLowerCase()
 
     action = "\n>You " + singleAction
-    message = " XP for" + currentStat + "and "  + currentSkill
+    message = "+1 XP for " + currentStat + " and "  + currentSkill
 
     if (state.stats[currentStat] < maxLevel) {
         state.stats[currentStat] += expirienceDistribution[6] / 16
@@ -276,7 +276,7 @@ function singleActionHandler(singleAction, keyword) {
     debugLog("Single action: " + singleAction + " and keyword is: " + keyword)
 
     var currentStat = avaliableActions[keyword][0].toLowerCase()  // Name of the stat of this action
-    var roll = Math.round(randomNumber(19)+ 1) + (state.stats[currentStat] - 8/state.stats[currentStat] -1)  // Weird-weird formula
+    var roll = Math.round((randomNumber(19)+ 1) + (state.stats[currentStat] - 8/state.stats[currentStat] -1))  // Weird-weird formula
     debugLog("Roll: " + roll.toString())
 
     if (avaliableActions[keyword][2]) { // Means it's a simple action like "Say". It doesn't require dependance on skill.
@@ -302,7 +302,7 @@ function singleActionHandler(singleAction, keyword) {
 
 function actionHandler(action) {
     if (action != undefined && !action.toLowerCase().includes("you")) {  // Story mode
-        return ["> " + action, tipsAndStats()]
+        return ["\n> " + action, tipsAndStats()]
     }
 
     action = action.substring(7); // Substring of 7, because start of the line look like: \n> You
