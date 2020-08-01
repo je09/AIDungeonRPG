@@ -252,19 +252,38 @@ function actionResultHandler(roll, index, singleAction, keyword) {
     return [action, message]
 }
 
+function simpleActionHandler(singleAction, keyword) {
+    currentStat = avaliableActions[keyword][0].toLowerCase()
+    currentSkill = avaliableActions[keyword][1].toLowerCase()
+
+    action = "\n>You " + singleAction
+    message = " XP for" + currentStat + "and "  + currentSkill
+
+    if (state.stats[currentStat] < maxLevel) {
+        state.stats[currentStat] += expirienceDistribution[6] / 16
+    }
+    if (state.skills[currentSkill] < maxLevel) {
+        state.skills[currentSkill] += expirienceDistribution[6] / 8
+    }
+
+    debugLog(action)
+    debugLog(message)
+
+    return [action, message]
+}
+
 function singleActionHandler(singleAction, keyword) {
     debugLog("Single action: " + singleAction + " and keyword is: " + keyword)
 
-    if (!singleAction[2]) { // Means it's a simple action like "Say". It doesn't require dependance on skill.
-        debugLog("This action is usual one")
-        return actionHandler(roll, 6, singleAction, keyword); // Success
+    var currentStat = avaliableActions[keyword][0].toLowerCase()  // Name of the stat of this action
+    var roll = Math.round(randomNumber(19)+ 1) + (state.stats[currentStat] - 8/state.stats[currentStat] -1)  // Weird-weird formula
+    debugLog("Roll: " + roll.toString())
+
+    if (avaliableActions[keyword][2]) { // Means it's a simple action like "Say". It doesn't require dependance on skill.
+        debugLog("This action is a usual one")
+        return simpleActionHandler(singleAction, keyword); // Success
     }
 
-    currentStat = avaliableActions[keyword][0].toLowerCase()  // Name of the stat of this action
-
-    var roll = Math.round(randomNumber(19)+ 1) + (state.stats[currentStat] - 8/state.stats[currentStat] -1)  // Weird-weird formula
-    
-    debugLog("Roll: " + roll.toString())
     switch (true) {
         case (roll <= 1):
             return actionResultHandler(roll, 0, singleAction, keyword);
@@ -282,7 +301,7 @@ function singleActionHandler(singleAction, keyword) {
 }
 
 function actionHandler(action) {
-    if (!action.includes("You")) {  // Story mode
+    if (action != undefined && !action.toLowerCase().includes("you")) {  // Story mode
         return ["> " + action, tipsAndStats()]
     }
 
